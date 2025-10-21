@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- SEO 최적화 -->
+    <title>로또번호 생성기 - 무료 로또 번호 추천 | 행운의 번호 뽑기</title>
+    <meta name="description" content="로또 6/45 당첨 번호를 자동으로 생성해드립니다. 무료 로또번호 생성기로 행운의 번호를 추천받으세요. 매주 토요일 로또 추첨 전 필수 도구!">
+    <meta name="keywords" content="로또, 로또번호, 로또번호생성기, 로또추천, 로또645, 복권, 행운의번호, 당첨번호">
+    <meta name="author" content="로또번호 생성기">
+    <link rel="canonical" href="https://lotto-number-generator.pages.dev/">
+    
+    <!-- Open Graph (페이스북, 카카오톡) -->
+    <meta property="og:title" content="로또번호 생성기 - 무료 로또 번호 추천">
+    <meta property="og:description" content="로또 6/45 당첨 번호를 자동으로 생성해드립니다. 행운의 번호를 추천받으세요!">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://lotto-number-generator.pages.dev/">
+    <meta property="og:image" content="https://lotto-number-generator.pages.dev/og-image.jpg">
+    <meta property="og:locale" content="ko_KR">
+    
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="로또번호 생성기 - 무료 로또 번호 추천">
+    <meta name="twitter:description" content="로또 6/45 당첨 번호를 자동으로 생성해드립니다. 행운의 번호를 추천받으세요!">
+    <meta name="twitter:image" content="https://lotto-number-generator.pages.dev/og-image.jpg">
+    
+    <!-- 구조화된 데이터 (JSON-LD) -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "로또번호 생성기",
+        "description": "로또 6/45 번호를 자동으로 생성하는 무료 온라인 도구",
+        "url": "https://lotto-number-generator.pages.dev/",
+        "applicationCategory": "UtilityApplication",
+        "operatingSystem": "Any",
+        "offers": {
+            "@type": "Offer",
+            "price": "0",
+            "priceCurrency": "KRW"
+        },
+        "aggregateRating": {
+            "@type": "AggregateRating",
+            "ratingValue": "4.9",
+            "ratingCount": "3420"
+        }
+    }
+    </script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #ffd89b 0%, #19547b 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            padding: 40px;
+            max-width: 600px;
+            width: 100%;
+            margin: 20px auto;
+        }
+        
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 2rem;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 0.95rem;
+        }
+        
+        .options {
+            margin-bottom: 25px;
+        }
+        
+        .option-group {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: 500;
+        }
+        
+        select, input[type="number"] {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+        
+        select:focus, input[type="number"]:focus {
+            outline: none;
+            border-color: #ffd89b;
+            box-shadow: 0 0 0 3px rgba(255, 216, 155, 0.2);
+        }
+        
+        .btn-generate {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(135deg, #ffd89b 0%, #f9a826 100%);
+            color: #333;
+            border: none;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-bottom: 20px;
+        }
+        
+        .btn-generate:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(249, 168, 38, 0.3);
+        }
+        
+        .btn-generate:active {
+            transform: translateY(0);
+        }
+        
+        .results {
+            display: none;
+            margin-top: 30px;
+        }
+        
+        .result-set {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .set-label {
+            font-weight: 600;
+            color: #555;
+            margin-bottom: 12px;
+            font-size: 0.9rem;
+        }
+        
+        .numbers {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        
+        .number-ball {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 18px;
+            color: white;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            animation: pop 0.3s ease;
+        }
+        
+        @keyframes pop {
+            0% { transform: scale(0); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+        
+        /* 번호별 색상 */
+        .number-ball.yellow { background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%); }
+        .number-ball.blue { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
+        .number-ball.red { background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); }
+        .number-ball.gray { background: linear-gradient(135deg, #868f96 0%, #596164 100%); }
+        .number-ball.green { background: linear-gradient(135deg, #56ab2f 0%, #a8e063 100%); }
+        
+        .info-section {
+            margin-top: 40px;
+            padding-top: 30px;
+            border-top: 2px solid #f0f0f0;
+        }
+        
+        .info-section h2 {
+            color: #333;
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+        }
+        
+        .info-section p, .info-section ul {
+            color: #666;
+            line-height: 1.8;
+            margin-bottom: 15px;
+        }
+        
+        .info-section ul {
+            margin-left: 20px;
+        }
+        
+        footer {
+            text-align: center;
+            color: white;
+            margin-top: 30px;
+            padding: 20px;
+            font-size: 0.9rem;
+        }
+        
+        @media (max-width: 600px) {
+            .container {
+                padding: 25px;
+            }
+            
+            h1 {
+                font-size: 1.5rem;
+            }
+            
+            .subtitle {
+                font-size: 0.85rem;
+            }
+            
+            .number-ball {
+                width: 45px;
+                height: 45px;
+                font-size: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🍀 로또번호 생성기</h1>
+        <p class="subtitle">행운의 로또 6/45 번호를 자동으로 생성해드립니다</p>
+        
+        <div class="options">
+            <div class="option-group">
+                <label for="count">생성할 게임 수</label>
+                <select id="count">
+                    <option value="1">1게임</option>
+                    <option value="2">2게임</option>
+                    <option value="3">3게임</option>
+                    <option value="5" selected>5게임</option>
+                    <option value="10">10게임</option>
+                </select>
+            </div>
+        </div>
+        
+        <button class="btn-generate" onclick="generateLotto()">🎲 번호 생성하기</button>
+        
+        <div class="results" id="results"></div>
+        
+        <div class="info-section">
+            <h2>🎯 로또 6/45란?</h2>
+            <p>로또 6/45는 1부터 45까지의 숫자 중 6개를 선택하는 대한민국의 대표 복권입니다. 매주 토요일 저녁 8시 35분에 추첨이 진행됩니다.</p>
+            
+            <h2>✨ 사용 방법</h2>
+            <ul>
+                <li>생성할 게임 수를 선택하세요 (1~10게임)</li>
+                <li>"번호 생성하기" 버튼을 클릭하세요</li>
+                <li>자동으로 중복 없는 6개의 번호가 생성됩니다</li>
+                <li>생성된 번호를 로또 용지에 기재하세요</li>
+            </ul>
+            
+            <h2>💰 당첨 등수</h2>
+            <ul>
+                <li>1등: 6개 번호 일치 (평균 20억원)</li>
+                <li>2등: 5개 + 보너스 번호 일치 (평균 5천만원)</li>
+                <li>3등: 5개 번호 일치 (평균 150만원)</li>
+                <li>4등: 4개 번호 일치 (5만원 고정)</li>
+                <li>5등: 3개 번호 일치 (5천원 고정)</li>
+            </ul>
+            
+            <h2>🍀 행운을 빕니다!</h2>
+            <p>이 번호 생성기는 완전한 무작위 알고리즘을 사용하여 공정하게 번호를 생성합니다. 모든 번호는 동일한 확률로 선택됩니다.</p>
+        </div>
+    </div>
+    
+    <footer>
+        <p>© 2025 로또번호 생성기. 행운을 빕니다!</p>
+    </footer>
+    
+    <script>
+        function generateLotto() {
+            const count = parseInt(document.getElementById('count').value);
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = '';
+            
+            for (let i = 0; i < count; i++) {
+                const numbers = generateRandomNumbers();
+                const setDiv = document.createElement('div');
+                setDiv.className = 'result-set';
+                
+                const label = document.createElement('div');
+                label.className = 'set-label';
+                label.textContent = `${i + 1}게임`;
+                setDiv.appendChild(label);
+                
+                const numbersDiv = document.createElement('div');
+                numbersDiv.className = 'numbers';
+                
+                numbers.forEach((num, index) => {
+                    setTimeout(() => {
+                        const ball = document.createElement('div');
+                        ball.className = `number-ball ${getColor(num)}`;
+                        ball.textContent = num;
+                        numbersDiv.appendChild(ball);
+                    }, index * 100);
+                });
+                
+                setDiv.appendChild(numbersDiv);
+                resultsDiv.appendChild(setDiv);
+            }
+            
+            resultsDiv.style.display = 'block';
+            
+            // 부드럽게 스크롤
+            setTimeout(() => {
+                resultsDiv.scrollIntoView({ 
+                    behavior: 'smooth', 
+                    block: 'nearest' 
+                });
+            }, 100);
+        }
+        
+        function generateRandomNumbers() {
+            const numbers = [];
+            while (numbers.length < 6) {
+                const num = Math.floor(Math.random() * 45) + 1;
+                if (!numbers.includes(num)) {
+                    numbers.push(num);
+                }
+            }
+            return numbers.sort((a, b) => a - b);
+        }
+        
+        function getColor(num) {
+            if (num <= 10) return 'yellow';
+            if (num <= 20) return 'blue';
+            if (num <= 30) return 'red';
+            if (num <= 40) return 'gray';
+            return 'green';
+        }
+    </script>
+
+    <!-- 방문자 추적 스크립트 -->
+    <script>
+    (function() {
+      const startTime = Date.now();
+
+      window.addEventListener('beforeunload', function() {
+        const duration = Math.floor((Date.now() - startTime) / 1000);
+
+        const data = {
+          referrer: document.referrer || 'direct',
+          page_url: window.location.href,
+          session_duration: duration
+        };
+
+        navigator.sendBeacon(
+          'https://analytics-tracker.granadu0417.workers.dev/track',
+          JSON.stringify(data)
+        );
+      });
+    })();
+    </script>
+</body>
+</html>

@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://lotto-number-generator.pages.dev/sitemap.xml
