@@ -10,7 +10,14 @@
     <meta name="keywords" content="로또, 로또번호, 로또번호생성기, 로또추천, 로또645, 복권, 행운의번호, 당첨번호">
     <meta name="author" content="로또번호 생성기">
     <link rel="canonical" href="https://lotto-number-generator.pages.dev/">
-    
+
+    <!-- PWA 지원 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#667eea">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="로또번호 생성기">
+
     <!-- Open Graph (페이스북, 카카오톡) -->
     <meta property="og:title" content="로또번호 생성기 - 무료 로또 번호 추천">
     <meta property="og:description" content="로또 6/45 당첨 번호를 자동으로 생성해드립니다. 행운의 번호를 추천받으세요!">
@@ -47,7 +54,10 @@
         }
     }
     </script>
-    
+
+    <!-- Kakao SDK -->
+    <script src="https://developers.kakao.com/sdk/js/kakao.js"></script>
+
     <style>
         * {
             margin: 0;
@@ -244,10 +254,154 @@
                 font-size: 16px;
             }
         }
+
+        .usage-counter {
+            text-align: center;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            margin-bottom: 20px;
+            color: white;
+            font-size: 14px;
+        }
+
+        .usage-counter .count {
+            font-size: 24px;
+            font-weight: 700;
+            color: #ffd700;
+            margin: 5px 0;
+        }
+
+        .share-section {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        .share-title {
+            text-align: center;
+            color: #555;
+            font-size: 14px;
+            margin-bottom: 15px;
+            font-weight: 500;
+        }
+
+        .share-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn-share {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-share:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        .btn-kakao {
+            background: #FEE500;
+            color: #000000;
+        }
+
+        .btn-facebook {
+            background: #1877F2;
+            color: white;
+        }
+
+        .btn-copy {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-copy.copied {
+            background: #28a745;
+        }
+
+        .bookmark-popup {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            max-width: 300px;
+            display: none;
+            animation: slideIn 0.5s ease-out;
+            z-index: 1000;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .bookmark-popup h3 {
+            color: #f9a826;
+            margin-bottom: 10px;
+            font-size: 18px;
+        }
+
+        .bookmark-popup p {
+            color: #666;
+            margin-bottom: 15px;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .bookmark-popup .shortcut {
+            background: #f0f0f0;
+            padding: 8px 12px;
+            border-radius: 5px;
+            font-weight: 600;
+            display: inline-block;
+            margin: 5px 0;
+        }
+
+        .bookmark-popup .btn-close {
+            width: 100%;
+            padding: 10px;
+            background: #f9a826;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            margin-top: 10px;
+        }
+
+        .bookmark-popup .btn-close:hover {
+            background: #e89615;
+        }
     </style>
 </head>
 <body>
     <div class="container">
+        <div class="usage-counter">
+            <div>지금까지</div>
+            <div class="count" id="usageCount">0</div>
+            <div>명이 사용했어요!</div>
+        </div>
+
         <h1>🍀 로또번호 생성기</h1>
         <p class="subtitle">행운의 로또 6/45 번호를 자동으로 생성해드립니다</p>
         
@@ -265,9 +419,24 @@
         </div>
         
         <button class="btn-generate" onclick="generateLotto()">🎲 번호 생성하기</button>
-        
+
         <div class="results" id="results"></div>
-        
+
+        <div class="share-section" id="shareSection" style="display:none;">
+            <div class="share-title">친구들에게 공유하기</div>
+            <div class="share-buttons">
+                <button class="btn-share btn-kakao" onclick="shareKakao()">
+                    <span>💬</span> 카카오톡
+                </button>
+                <button class="btn-share btn-facebook" onclick="shareFacebook()">
+                    <span>📘</span> 페이스북
+                </button>
+                <button class="btn-share btn-copy" onclick="copyLink()" id="copyBtn">
+                    <span>🔗</span> 링크 복사
+                </button>
+            </div>
+        </div>
+
         <div class="info-section">
             <h2>🎯 로또 6/45란?</h2>
             <p>로또 6/45는 1부터 45까지의 숫자 중 6개를 선택하는 대한민국의 대표 복권입니다. 매주 토요일 저녁 8시 35분에 추첨이 진행됩니다.</p>
@@ -297,7 +466,16 @@
     <footer>
         <p>© 2025 로또번호 생성기. 행운을 빕니다!</p>
     </footer>
-    
+
+    <!-- 즐겨찾기 유도 팝업 -->
+    <div class="bookmark-popup" id="bookmarkPopup">
+        <h3>⭐ 자주 사용하시나요?</h3>
+        <p>즐겨찾기에 추가하면 더 빠르게 접속할 수 있어요!</p>
+        <div class="shortcut">Windows: Ctrl + D</div>
+        <div class="shortcut">Mac: Cmd + D</div>
+        <button class="btn-close" onclick="closeBookmarkPopup()">확인했어요</button>
+    </div>
+
     <script>
         function generateLotto() {
             const count = parseInt(document.getElementById('count').value);
@@ -331,14 +509,20 @@
             }
             
             resultsDiv.style.display = 'block';
-            
+
+            // 공유 섹션 표시
+            document.getElementById('shareSection').style.display = 'block';
+
             // 부드럽게 스크롤
             setTimeout(() => {
-                resultsDiv.scrollIntoView({ 
-                    behavior: 'smooth', 
-                    block: 'nearest' 
+                resultsDiv.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'nearest'
                 });
             }, 100);
+
+            // 즐겨찾기 팝업 표시 확인
+            showBookmarkPopup();
         }
         
         function generateRandomNumbers() {
@@ -358,6 +542,207 @@
             if (num <= 30) return 'red';
             if (num <= 40) return 'gray';
             return 'green';
+        }
+
+        // 사용 횟수 카운터 초기화 및 증가
+        function initUsageCounter() {
+            const storageKey = 'lotto_usage_count';
+            const baseCount = 187650; // 시작 기준값
+            let currentCount = parseInt(localStorage.getItem(storageKey)) || baseCount;
+
+            // 페이지 로드 시 1씩 증가
+            currentCount++;
+            localStorage.setItem(storageKey, currentCount);
+
+            // 숫자를 천 단위 구분자로 포맷팅
+            const formattedCount = currentCount.toLocaleString('ko-KR');
+
+            // 애니메이션 효과로 숫자 표시
+            const countElement = document.getElementById('usageCount');
+            let start = currentCount - 100;
+            const duration = 1000;
+            const increment = 100 / (duration / 16);
+            let current = start;
+
+            const timer = setInterval(() => {
+                current += increment;
+                if (current >= currentCount) {
+                    countElement.textContent = formattedCount;
+                    clearInterval(timer);
+                } else {
+                    countElement.textContent = Math.floor(current).toLocaleString('ko-KR');
+                }
+            }, 16);
+        }
+
+        // 페이지 로드 시 카운터 초기화
+        window.addEventListener('DOMContentLoaded', initUsageCounter);
+
+        // URL 파라미터에서 게임 수 가져오기
+        function loadFromURL() {
+            const params = new URLSearchParams(window.location.search);
+            const games = params.get('games');
+
+            if (games) {
+                const gamesNum = parseInt(games);
+                if (gamesNum >= 1 && gamesNum <= 10) {
+                    document.getElementById('count').value = gamesNum;
+                    // 자동으로 번호 생성
+                    setTimeout(() => {
+                        generateLotto();
+                    }, 500);
+                }
+            }
+        }
+
+        // 페이지 로드 시 URL 파라미터 확인
+        window.addEventListener('DOMContentLoaded', loadFromURL);
+
+        // PWA Service Worker 등록
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                    .then(registration => {
+                        console.log('Service Worker 등록 성공:', registration.scope);
+                    })
+                    .catch(error => {
+                        console.log('Service Worker 등록 실패:', error);
+                    });
+            });
+        }
+
+        // 즐겨찾기 팝업 표시 로직
+        function showBookmarkPopup() {
+            const storageKey = 'lotto_bookmark_popup_shown';
+            const usageKey = 'user_lotto_generation_count';
+
+            // 이미 팝업을 본 경우 표시하지 않음
+            if (localStorage.getItem(storageKey)) {
+                return;
+            }
+
+            // 사용 횟수 가져오기
+            let usageCount = parseInt(localStorage.getItem(usageKey)) || 0;
+            usageCount++;
+            localStorage.setItem(usageKey, usageCount);
+
+            // 3번째 사용 시 팝업 표시
+            if (usageCount === 3) {
+                setTimeout(() => {
+                    document.getElementById('bookmarkPopup').style.display = 'block';
+                }, 1000);
+            }
+        }
+
+        // 즐겨찾기 팝업 닫기
+        function closeBookmarkPopup() {
+            document.getElementById('bookmarkPopup').style.display = 'none';
+            localStorage.setItem('lotto_bookmark_popup_shown', 'true');
+        }
+
+        // Kakao SDK 초기화
+        if (typeof Kakao !== 'undefined' && !Kakao.isInitialized()) {
+            Kakao.init('YOUR_KAKAO_APP_KEY'); // TODO: Kakao 앱 키 필요
+        }
+
+        // 카카오톡 공유
+        function shareKakao() {
+            if (typeof Kakao === 'undefined' || !Kakao.isInitialized()) {
+                alert('카카오톡 공유 기능을 사용할 수 없습니다.');
+                return;
+            }
+
+            const games = document.getElementById('count').value;
+            let shareUrl = window.location.origin + window.location.pathname;
+
+            // 현재 선택된 게임 수가 있으면 URL 파라미터에 추가
+            if (games) {
+                shareUrl += '?games=' + games;
+            }
+
+            Kakao.Share.sendDefault({
+                objectType: 'feed',
+                content: {
+                    title: '로또번호 생성기',
+                    description: '행운의 로또 6/45 번호를 자동으로 생성해드립니다!',
+                    imageUrl: 'https://lotto-number-generator.pages.dev/og-image.jpg',
+                    link: {
+                        mobileWebUrl: shareUrl,
+                        webUrl: shareUrl
+                    }
+                },
+                buttons: [
+                    {
+                        title: '로또번호 뽑기',
+                        link: {
+                            mobileWebUrl: shareUrl,
+                            webUrl: shareUrl
+                        }
+                    }
+                ]
+            });
+        }
+
+        // 페이스북 공유
+        function shareFacebook() {
+            const games = document.getElementById('count').value;
+            let shareUrl = window.location.origin + window.location.pathname;
+
+            // 현재 선택된 게임 수가 있으면 URL 파라미터에 추가
+            if (games) {
+                shareUrl += '?games=' + games;
+            }
+
+            const url = encodeURIComponent(shareUrl);
+            window.open(`https://www.facebook.com/sharer/sharer.php?u=${url}`, '_blank', 'width=600,height=400');
+        }
+
+        // 링크 복사
+        function copyLink() {
+            const games = document.getElementById('count').value;
+            let url = window.location.origin + window.location.pathname;
+
+            // 현재 선택된 게임 수가 있으면 URL 파라미터에 추가
+            if (games) {
+                url += '?games=' + games;
+            }
+
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(url).then(() => {
+                    const btn = document.getElementById('copyBtn');
+                    const originalHTML = btn.innerHTML;
+                    btn.innerHTML = '<span>✅</span> 복사완료!';
+                    btn.classList.add('copied');
+
+                    setTimeout(() => {
+                        btn.innerHTML = originalHTML;
+                        btn.classList.remove('copied');
+                    }, 2000);
+                }).catch(() => {
+                    fallbackCopyLink(url);
+                });
+            } else {
+                fallbackCopyLink(url);
+            }
+        }
+
+        // 링크 복사 대체 방법 (구형 브라우저)
+        function fallbackCopyLink(url) {
+            const textarea = document.createElement('textarea');
+            textarea.value = url;
+            textarea.style.position = 'fixed';
+            textarea.style.opacity = '0';
+            document.body.appendChild(textarea);
+            textarea.select();
+
+            try {
+                document.execCommand('copy');
+                alert('링크가 복사되었습니다!');
+            } catch (err) {
+                alert('링크 복사에 실패했습니다. 수동으로 복사해주세요: ' + url);
+            }
+
+            document.body.removeChild(textarea);
         }
     </script>
 
