@@ -55,9 +55,6 @@
     }
     </script>
 
-    <!-- Kakao SDK -->
-    <script src="https://developers.kakao.com/sdk/js/kakao.js"></script>
-
     <style>
         * {
             margin: 0;
@@ -311,11 +308,6 @@
             box-shadow: 0 4px 8px rgba(0,0,0,0.2);
         }
 
-        .btn-kakao {
-            background: #FEE500;
-            color: #000000;
-        }
-
         .btn-facebook {
             background: #1877F2;
             color: white;
@@ -425,9 +417,6 @@
         <div class="share-section" id="shareSection" style="display:none;">
             <div class="share-title">친구들에게 공유하기</div>
             <div class="share-buttons">
-                <button class="btn-share btn-kakao" onclick="shareKakao()">
-                    <span>💬</span> 카카오톡
-                </button>
                 <button class="btn-share btn-facebook" onclick="shareFacebook()">
                     <span>📘</span> 페이스북
                 </button>
@@ -638,49 +627,6 @@
         function closeBookmarkPopup() {
             document.getElementById('bookmarkPopup').style.display = 'none';
             localStorage.setItem('lotto_bookmark_popup_shown', 'true');
-        }
-
-        // Kakao SDK 초기화
-        if (typeof Kakao !== 'undefined' && !Kakao.isInitialized()) {
-            Kakao.init('YOUR_KAKAO_APP_KEY'); // TODO: Kakao 앱 키 필요
-        }
-
-        // 카카오톡 공유
-        function shareKakao() {
-            if (typeof Kakao === 'undefined' || !Kakao.isInitialized()) {
-                alert('카카오톡 공유 기능을 사용할 수 없습니다.');
-                return;
-            }
-
-            const games = document.getElementById('count').value;
-            let shareUrl = window.location.origin + window.location.pathname;
-
-            // 현재 선택된 게임 수가 있으면 URL 파라미터에 추가
-            if (games) {
-                shareUrl += '?games=' + games;
-            }
-
-            Kakao.Share.sendDefault({
-                objectType: 'feed',
-                content: {
-                    title: '로또번호 생성기',
-                    description: '행운의 로또 6/45 번호를 자동으로 생성해드립니다!',
-                    imageUrl: 'https://lotto-number-generator.pages.dev/og-image.jpg',
-                    link: {
-                        mobileWebUrl: shareUrl,
-                        webUrl: shareUrl
-                    }
-                },
-                buttons: [
-                    {
-                        title: '로또번호 뽑기',
-                        link: {
-                            mobileWebUrl: shareUrl,
-                            webUrl: shareUrl
-                        }
-                    }
-                ]
-            });
         }
 
         // 페이스북 공유
